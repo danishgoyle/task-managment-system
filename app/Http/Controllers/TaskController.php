@@ -2,64 +2,98 @@
 
 namespace App\Http\Controllers;
 use App\Models\Task;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+   
+    
     public function index()
     {
-        $tasks = Task::all();
+        try {
+            $token = session('jwt_token');
+            JWTAuth::setToken($token);
+            $user = JWTAuth::toUser();
+        } catch (\Exception $e) {
+           
+            return redirect()->route('login');
+        }
+
+
+        
+        $tasks = Task::where('user_id',$user->id)->get();
         return view('tasks.index', compact('tasks'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    
     public function create()
     {
+        try {
+            $token = session('jwt_token');
+            JWTAuth::setToken($token);
+            $user = JWTAuth::toUser();
+        } catch (\Exception $e) {
+           
+            return redirect()->route('login');
+        }
+
         return view('tasks.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
+        try {
+            $token = session('jwt_token');
+            JWTAuth::setToken($token);
+            $user = JWTAuth::toUser();
+        } catch (\Exception $e) {
+           
+            return redirect()->route('login');
+        }
+
+
         $request->validate([
             'title' => 'required',
             'description' => 'required',
         ]);
-
-        Task::create($request->all());
+        $record = new Task();
+        $record->title = $request->title;
+        $record->description = $request->description;
+        $record->user_id = $user->id;
+        $record->save();
+        //Task::create($request->all());
 
         return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Task $task)
     {
+        try {
+            $token = session('jwt_token');
+            JWTAuth::setToken($token);
+            $user = JWTAuth::toUser();
+        } catch (\Exception $e) {
+           
+            return redirect()->route('login');
+        }
+
         return view('tasks.edit', compact('task'));
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Task $task)
     {
+        try {
+            $token = session('jwt_token');
+            JWTAuth::setToken($token);
+            $user = JWTAuth::toUser();
+        } catch (\Exception $e) {
+           
+            return redirect()->route('login');
+        }
+
         $request->validate([
             'title' => 'required',
             'description' => 'required',
@@ -70,12 +104,17 @@ class TaskController extends Controller
         $task->update($request->all());
         return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Task $task)
     {
+        try {
+            $token = session('jwt_token');
+            JWTAuth::setToken($token);
+            $user = JWTAuth::toUser();
+        } catch (\Exception $e) {
+           
+            return redirect()->route('login');
+        }
+        
         $task->delete();
 
         return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');

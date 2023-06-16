@@ -9,7 +9,6 @@
     @endif
 
     <a href="{{ route('tasks.create') }}" class="btn btn-primary mb-3">Create Task</a>
-    <a href="{{ route('logout') }}" class="btn btn-primary mb-3">Logout</a>
 
     <table class="table">
         <thead>
